@@ -4,15 +4,27 @@ import Card from "../../shared/components/UIElements/Card";
 import { useState } from "react";
 import "./PlaceItem.css";
 import { AuthContext } from "../../shared/context/auth-context";
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import ErrorModal from "../../shared/components/UIElements/ErrorModal";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+
 const PlaceItem = (props) => {
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
 
   const [deletePressed, setDeletePressed] = useState(false);
   const deletePressedHandler = () => {
     setDeletePressed(!deletePressed);
   };
-  const confirmDeleteHandler = () => {
-    console.log("This component is deleted :p ");
+  const confirmDeleteHandler = async () => {
+    try {
+      // clearError()
+      await sendRequest(
+        `http://localhost:5000/api/places/${props.id}`,
+        "DELETE"
+      );
+      props.onDelete(props.id);
+    } catch (err) {}
   };
   // console.log(deletePressed);
   const mapsApi = "https://www.google.com/maps/search/?api=1&query=";
@@ -40,8 +52,8 @@ const PlaceItem = (props) => {
         >
           VIEW ON MAP
         </Button>
-        {auth.isLoggedIn && <Button to={`/places/${props.id}`}>EDIT</Button>}
-        {auth.isLoggedIn && (
+        {auth.userId === props.creatorId && <Button to={`/places/${props.id}`}>EDIT</Button>}
+        {auth.userId === props.creatorId && (
           <Button danger onClick={deletePressedHandler}>
             DELETE
           </Button>
@@ -67,14 +79,18 @@ const PlaceItem = (props) => {
 
   const buttonsElement = deletePressed ? deleteButtons : regularButtons;
   return (
-    <li className="place-item">
-      <Card className="place-item__content">
-        <div className="place-item__actions">
-          {placeDescElement}
-          {buttonsElement}
-        </div>
-      </Card>
-    </li>
+    <>
+      <ErrorModal error={error} onClear={clearError}></ErrorModal>
+      <li className="place-item">
+        <Card className="place-item__content">
+          {isLoading && <LoadingSpinner asOverlay />}
+          <div className="place-item__actions">
+            {placeDescElement}
+            {buttonsElement}
+          </div>
+        </Card>
+      </li>
+    </>
   );
 };
 
