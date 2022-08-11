@@ -29,8 +29,8 @@ const PlaceItem = (props) => {
     } catch (err) {}
   };
   // console.log(deletePressed);
-  const mapsApi = "https://www.google.com/maps/search/?api=1&query=";
-  console.log(`${mapsApi}${props.coordinates.lat}%2C${props.coordinates.lng}`);
+  // const mapsApi = "https://www.google.com/maps/search/?api=1&query=";
+  // console.log(`${mapsApi}${props.coordinates.lat}%2C${props.coordinates.lng}`);
 
   const placeDescElement = (
     <div>
@@ -50,7 +50,7 @@ const PlaceItem = (props) => {
       <div>
         <Button
           inverse
-          href={`${mapsApi}${props.coordinates.lat}%2C${props.coordinates.lng}`}
+          href={props.location}
         >
           VIEW ON MAP
         </Button>

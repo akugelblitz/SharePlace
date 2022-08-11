@@ -48,19 +48,19 @@ const createPlace = async (req, res, next) => {
     return next(new HttpError("Invalid inputs passed", 422));
   }
 
-  const { title, description, address, creator } = req.body;
-  let coordinates;
-  try {
-    coordinates = await getCoordsForAddress(address);
-  } catch (error) {
-    return next(error);
-  }
+  const { title, description, address, creator, location } = req.body;
+  // let coordinates;
+  // try {
+  //   coordinates = await getCoordsForAddress(address);
+  // } catch (error) {
+  //   return next(error);
+  // }
   const createdPlace = new Place({
     title,
     description,
     image: req.file.path,
     address,
-    location: coordinates,
+    location,
     creator
   })
   let user;
