@@ -22,6 +22,7 @@ export const useHttpClient = () => {
 
         const responseData = await response.json();
 
+        
         activeHttpRequests.current = activeHttpRequests.current.filter(
           reqCtrl => reqCtrl !== httpAbortCtrl
         );
@@ -33,7 +34,15 @@ export const useHttpClient = () => {
         setIsLoading(false);
         return responseData;
       } catch (err) {
-        setError(err.message);
+
+
+        //COMMENTING THIS BECAUSE THIS IS CAUSING AN ERROR MESSAGE THAT USER ABORTED A REQUEST
+        //THIS WILL CAUSE NO ERROR MESSAGES TO BE REPORTED LUL
+        if(err.message !== "The user aborted a request."){
+          setError(err.message); 
+        }
+        
+
         setIsLoading(false);
         throw err;
       }

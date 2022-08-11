@@ -35,7 +35,7 @@ const getPlacesByUserId = async (req, res, next) => {
     return next(error)
   }
 
-  if (!userWithPlaces || userWithPlaces.places.length === 0) {
+  if (!userWithPlaces) {
     return next(new HttpError("No place for this user id", 404));
   }
   res.json({ places: userWithPlaces.places.map(place => place.toObject({getters: true})) });
@@ -58,7 +58,7 @@ const createPlace = async (req, res, next) => {
   const createdPlace = new Place({
     title,
     description,
-    image: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.VZzwhmZhXKvBXjZvVhie5QHaEg%26pid%3DApi&f=1',
+    image: req.file.path,
     address,
     location: coordinates,
     creator

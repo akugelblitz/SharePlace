@@ -1,5 +1,5 @@
 const { validationResult } = require("express-validator");
-
+const bcrypt = require("bcryptjs");
 const HttpError = require("../models/http-error");
 const User = require("../models/user");
 
@@ -19,6 +19,7 @@ const signup = async (req, res, next) => {
     console.log(errors);
     return next(new HttpError("Invalid inputs passed", 422));
   }
+
   const { name, email, password } = req.body;
 
   let existingUser;
@@ -32,12 +33,19 @@ const signup = async (req, res, next) => {
     return next(new HttpError("This email is already registered", 422));
   }
 
+  let hashedPassword;
+  try{
+    hashedPassword = await bcrypt.hash(password, 12);
+  }
+  catch(err){
+    const error = new HttpError("Could not generate hash, try later", 500)
+    return next(error)
+  }
   const createdUser = new User({
     name,
     email,
-    image:
-      "https://imgresizer.eurosport.com/unsafe/1200x0/filters:format(jpeg):focal(1325x507:1327x505)/origin-imgresizer.eurosport.com/2020/11/02/2927216-60138288-2560-1440.jpg",
-    password,
+    image: req.file.path,
+    password: hashedPassword,
     places: [],
   });
 
@@ -59,15 +67,25 @@ const login = async (req, res, next) => {
     return next(new HttpError("Log in up failed", 500));
   }
 
-  if (!existingUser || existingUser.password !== password) {
+  if (!existingUser) {
     return next(new HttpError("Invalid credentials", 401));
   }
-  res
-    .status(200)
-    .json({
-      message: "logged in",
-      user: existingUser.toObject({ getters: true }),
-    });
+
+  let isValidPassword = false;
+  try{
+    isValidPassword = await bcrypt.compare(password, existingUser.password)
+  }
+  catch(err){
+    return next(new HttpError("Could not log you in, try again later", 500));
+  }
+
+  if(!isValidPassword){
+    return next(new HttpError("Invalid credentials", 401));
+  }
+  res.status(200).json({
+    message: "logged in",
+    user: existingUser.toObject({ getters: true }),
+  });
 };
 
 exports.getUsers = getUsers;

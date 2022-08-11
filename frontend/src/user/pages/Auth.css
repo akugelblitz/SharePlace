@@ -6,9 +6,10 @@
   
   .authentication {
     width: 90%;
-    max-width: 25rem;
+    max-width: 30rem;
     margin: 7rem auto;
-    padding: 1rem;
+    margin-top: 3rem;
+    padding: 3rem;
     /* text-align: center; */
   }
   
