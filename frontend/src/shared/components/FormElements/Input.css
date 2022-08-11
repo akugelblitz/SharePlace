@@ -15,6 +15,7 @@
   
   .form-control input,
   .form-control textarea {
+    color: aqua;
     width: 100%;
     font: inherit;
     border: 1px solid #3e4446;

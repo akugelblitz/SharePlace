@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const placesRoutes = require("./routes/places-route");
 const usersRoutes = require("./routes/users-route");
 const HttpError = require("./models/http-error");
-const config = require("./config.js");
+const config = require("./config");
 
 let MONGO_DB_CONNECTION = config.MONGO_DB_URL;
 
