@@ -1,5 +1,5 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require("fs");
+const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -7,14 +7,15 @@ const mongoose = require("mongoose");
 const placesRoutes = require("./routes/places-route");
 const usersRoutes = require("./routes/users-route");
 const HttpError = require("./models/http-error");
+const config = require("./config.js");
 
-
+let MONGO_DB_CONNECTION = config.MONGO_DB_URL;
 
 const app = express();
 
 app.use(bodyParser.json());
 
-app.use('/uploads/images', express.static(path.join('uploads', 'images')))
+app.use("/uploads/images", express.static(path.join("uploads", "images")));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -22,7 +23,7 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE')
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
   next();
 });
 
@@ -35,10 +36,10 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-  if(req.file){
+  if (req.file) {
     fs.unlink(req.file.path, () => {
-      console.log(error)
-    })
+      console.log(error);
+    });
   }
   if (res.headerSent) {
     return next(error);
@@ -48,9 +49,7 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect(
-    "mongodb+srv://aditya:pC2BWmX35JAbVPm@cluster0.o4q5tvx.mongodb.net/mern?retryWrites=true&w=majority"
-  )
+  .connect(MONGO_DB_CONNECTION)
   .then(() => app.listen(5000))
   .catch((err) => {
     console.log(err);
